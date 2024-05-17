@@ -3,5 +3,5 @@ tech.md
 .env
 note.md
 /metadata
-/migirations
+/migrations
 /seeds
