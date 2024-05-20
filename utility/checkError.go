@@ -8,6 +8,6 @@ import (
 func CheckError(e error, customMessage string) {
 	if e != nil {
 		fmt.Printf("%s  %v", customMessage, e)
+		os.Exit(1)
 	}
-	os.Exit(1)
 }
