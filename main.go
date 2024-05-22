@@ -9,8 +9,6 @@ import (
 	"github.com/kaleabAlemayehu/foodopia/utility"
 )
 
-// http://localhost:8080/v1/graphql
-
 func main() {
 
 	err := godotenv.Load(".env")
@@ -21,6 +19,7 @@ func main() {
 
 	r := gin.Default()
 	r.POST("/signup", handlers.Signup)
+	r.POST("/login", handlers.Login)
 	r.Run(":" + port)
 
 }
