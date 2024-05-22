@@ -166,20 +166,20 @@ func Login(c *gin.Context) {
 		"user_id": user["id"],
 		"exp":     time.Now().Add(time.Hour * 24 * 30).Unix(),
 	})
-	//  loading mysecret key
-	MY_SECRET := os.Getenv("MY_SECRET")
 
-	tokenString, err := token.SignedString([]byte(MY_SECRET))
+	tokenString, err := token.SignedString([]byte(os.Getenv("MY_SECRET")))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "failed to generate token",
 		})
 		return
 	}
-
+	//
+	c.SetSameSite(http.SameSiteLaxMode)
+	c.SetCookie("Authorization", tokenString, 3600*24*30, "", "", false, true)
 	// Send it back
 	c.JSON(http.StatusOK, gin.H{
-		"token": tokenString,
+		"message": "succefully logged in",
 	})
 
 }
