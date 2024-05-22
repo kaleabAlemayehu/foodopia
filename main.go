@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"github.com/kaleabAlemayehu/foodopia/handlers"
 	"github.com/kaleabAlemayehu/foodopia/utility"
 )
 
@@ -19,14 +20,7 @@ func main() {
 	port := os.Getenv("GIN_PORT")
 
 	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
+	r.POST("/signup", handlers.Signup)
 	r.Run(":" + port)
-
-	// client := graphql.NewClient(graphqlEndPoint, nil)
-	// Use client...
 
 }
