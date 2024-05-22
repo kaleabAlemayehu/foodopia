@@ -7,22 +7,17 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/kaleabAlemayehu/foodopia/utility"
+
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 )
 
-var CreateUserQueryStr string = `mutation MyMutation($username: String!, $password_hash: String!, $email: String!) {
-	insert_foodopia_users_one(object: {email: $email, password_hash: $password_hash, username: $username}) {
-		id
-		username
-		password_hash
-	}
-}`
-
 func Signup(c *gin.Context) {
+	query := utility.CreateUserQueryStr
 
 	// Load GQL url form environment
-	GQLURL := os.Getenv("GRAPHQL_URI")
+	var GQLURL string = os.Getenv("GRAPHQL_URI")
 	if GQLURL == "" {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "GRAPHQL_URI not set",
@@ -54,7 +49,7 @@ func Signup(c *gin.Context) {
 	log.Printf("username: %s\n password: %s\n email: %s\n", body.Username, body.Password, body.Email)
 	// create the user
 	payload := map[string]interface{}{
-		"query": CreateUserQueryStr,
+		"query": query,
 		"variables": map[string]string{
 			"username":      body.Username,
 			"password_hash": string(hashedPassword),
@@ -90,4 +85,19 @@ func Signup(c *gin.Context) {
 
 	// Respond with the result
 	c.JSON(http.StatusOK, result)
+}
+
+func Login(c *gin.Context) {
+	// get query form query.go
+	// query := utility.CheckUser
+	// loading GQL URL
+	// get email and pass of from req body
+
+	//  lookup registered user
+
+	// compare sent it pass with saved user pass hash
+
+	// generate JWT token
+
+	// sent it back
 }
