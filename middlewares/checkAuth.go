@@ -49,6 +49,13 @@ func CheckAuth(c *gin.Context) {
 		return
 	}
 
+	// checking token validity
+	if !token.Valid {
+		log.Println("Token is not valid")
+		c.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
+
 	//  checking for the claims
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 
