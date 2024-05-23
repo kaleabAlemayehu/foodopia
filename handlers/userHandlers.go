@@ -183,3 +183,7 @@ func Login(c *gin.Context) {
 	})
 
 }
+
+func GeneralFunc(c *gin.Context) {
+
+}
