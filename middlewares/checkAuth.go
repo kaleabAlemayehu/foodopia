@@ -53,13 +53,8 @@ func CheckAuth(c *gin.Context) {
 			userID = fmt.Sprintf("%.0f", userIDFloat)
 		}
 
-		// Find the user with the token subject (user ID)
-		// For demonstration, we're directly attaching the userID to the context
-		// In a real scenario, you might query the user from the database
 		c.Set("userID", userID)
 
-		// attach to req
-		fmt.Printf("in the middleware userid: %v and it does work", userID)
 		// Continue
 		c.Next()
 	} else {

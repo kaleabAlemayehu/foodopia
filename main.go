@@ -21,7 +21,7 @@ func main() {
 	r := gin.Default()
 	r.POST("/signup", handlers.Signup)
 	r.POST("/login", handlers.Login)
-	r.POST("/graphql", middlewares.CheckAuth, handlers.GeneralFunc)
+	r.POST("/graphql", middlewares.CheckAuth, handlers.ProxyToHasura)
 	r.Run(":" + port)
 
 }

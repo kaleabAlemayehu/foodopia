@@ -3,6 +3,7 @@ package handlers
 import (
 	"bytes"
 	"encoding/json"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -184,6 +185,71 @@ func Login(c *gin.Context) {
 
 }
 
-func GeneralFunc(c *gin.Context) {
+func ProxyToHasura(c *gin.Context) {
+	// Get the Hasura GraphQL endpoint
+	hasuraURL := os.Getenv("GRAPHQL_URI")
+	if hasuraURL == "" {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "HASURA_GRAPHQL_URL not set",
+		})
+		return
+	}
 
+	// Read the body from the original request
+	bodyBytes, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "failed to read request body",
+		})
+		return
+	}
+
+	// Create a new request to forward to Hasura
+	req, err := http.NewRequest(c.Request.Method, hasuraURL, bytes.NewBuffer(bodyBytes))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "failed to create request",
+		})
+		return
+	}
+
+	// Copy headers
+	for key, values := range c.Request.Header {
+		for _, value := range values {
+			req.Header.Add(key, value)
+		}
+	}
+
+	// Perform the request
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "failed to send request to Hasura",
+		})
+		return
+	}
+	defer resp.Body.Close()
+
+	// Read the response body
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "failed to read response from Hasura",
+		})
+		return
+	}
+
+	// Copy the response headers
+	for key, values := range resp.Header {
+		for _, value := range values {
+			c.Writer.Header().Add(key, value)
+		}
+	}
+
+	// Write the status code
+	c.Writer.WriteHeader(resp.StatusCode)
+
+	// Write the response body
+	c.Writer.Write(respBody)
 }
