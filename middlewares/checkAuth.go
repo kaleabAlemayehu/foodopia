@@ -34,6 +34,22 @@ func CheckAuth(c *gin.Context) {
 		c.AbortWithStatus(http.StatusUnauthorized)
 	}
 
+	// checking any segementation error on claim
+	// checking wheather token is null
+	if token == nil {
+		log.Println("Token is nil")
+		c.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
+	// checking wheather token.Claims is null
+
+	if token.Claims == nil {
+		log.Println("Token claims are nil")
+		c.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
+
+	//  checking for the claims
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 
 		// check the experation
