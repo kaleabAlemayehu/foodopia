@@ -1,32 +1,46 @@
 table:
-  name: users
+  name: recipes
   schema: public
+object_relationships:
+  - name: category
+    using:
+      foreign_key_constraint_on: category_id
+  - name: user
+    using:
+      foreign_key_constraint_on: user_id
 array_relationships:
   - name: bookmarks
     using:
       foreign_key_constraint_on:
-        column: user_id
+        column: recipe_id
         table:
           name: bookmarks
           schema: public
   - name: comments
     using:
       foreign_key_constraint_on:
-        column: user_id
+        column: recipe_id
         table:
           name: comments
+          schema: public
+  - name: ingredients
+    using:
+      foreign_key_constraint_on:
+        column: recipe_id
+        table:
+          name: ingredients
           schema: public
   - name: likes
     using:
       foreign_key_constraint_on:
-        column: user_id
+        column: recipe_id
         table:
           name: likes
           schema: public
-  - name: recipes
+  - name: steps
     using:
       foreign_key_constraint_on:
-        column: user_id
+        column: recipe_id
         table:
-          name: recipes
+          name: steps
           schema: public

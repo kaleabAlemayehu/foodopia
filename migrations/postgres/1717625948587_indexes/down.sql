@@ -1,0 +1,12 @@
+-- Could not auto-generate a down migration.
+-- Please write an appropriate down migration for the SQL below:
+-- CREATE INDEX idx_recipe_user_id ON recipes(user_id);
+-- CREATE INDEX idx_recipe_category_id ON recipes(category_id);
+-- CREATE INDEX idx_ingredient_recipe_id ON ingredients(recipe_id);
+-- CREATE INDEX idx_step_recipe_id ON steps(recipe_id);
+-- CREATE INDEX idx_comment_recipe_id ON comments(recipe_id);
+-- CREATE INDEX idx_comment_user_id ON comments(user_id);
+-- CREATE INDEX idx_like_recipe_id ON likes(recipe_id);
+-- CREATE INDEX idx_like_user_id ON likes(user_id);
+-- CREATE INDEX idx_bookmark_recipe_id ON bookmarks(recipe_id);
+-- CREATE INDEX idx_bookmark_user_id ON bookmarks(user_id);

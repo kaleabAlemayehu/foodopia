@@ -1,1 +1,8 @@
+- "!include public_bookmarks.yaml"
+- "!include public_categories.yaml"
+- "!include public_comments.yaml"
+- "!include public_ingredients.yaml"
+- "!include public_likes.yaml"
+- "!include public_recipes.yaml"
+- "!include public_steps.yaml"
 - "!include public_users.yaml"

@@ -1,0 +1,7 @@
+table:
+  name: ingredients
+  schema: public
+object_relationships:
+  - name: recipe
+    using:
+      foreign_key_constraint_on: recipe_id
