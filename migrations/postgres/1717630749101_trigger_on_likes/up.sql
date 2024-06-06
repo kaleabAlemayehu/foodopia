@@ -7,6 +7,6 @@ BEGIN
         WHERE recipe_id = NEW.recipe_id
     )
     WHERE id = NEW.recipe_id;
-    RETURN NULL; -- Since this is an event trigger, we return NULL
+    RETURN NULL;
 END;
 $$ LANGUAGE plpgsql;
