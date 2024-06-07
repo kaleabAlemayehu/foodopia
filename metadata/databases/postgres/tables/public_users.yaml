@@ -30,3 +30,10 @@ array_relationships:
         table:
           name: recipes
           schema: public
+computed_fields:
+  - name: recipes_by_user
+    definition:
+      function:
+        name: get_recipes_for_user
+        schema: public
+    comment: Get recipes created by the user

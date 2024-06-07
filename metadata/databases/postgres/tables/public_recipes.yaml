@@ -37,6 +37,13 @@ array_relationships:
         table:
           name: likes
           schema: public
+  - name: recipe_images
+    using:
+      foreign_key_constraint_on:
+        column: recipe_id
+        table:
+          name: recipe_images
+          schema: public
   - name: steps
     using:
       foreign_key_constraint_on:
