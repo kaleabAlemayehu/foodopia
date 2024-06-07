@@ -143,7 +143,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	users, ok := checkResult["data"].(map[string]interface{})["foodopia_users"].([]interface{})
+	users, ok := checkResult["data"].(map[string]interface{})["users"].([]interface{})
 	if !ok || len(users) == 0 {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": "user not found",
@@ -161,11 +161,11 @@ func Login(c *gin.Context) {
 		})
 		return
 	}
-
+	log.Printf("user log: %v", user)
 	// Generate JWT token
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id": user["id"],
-		"exp":     time.Now().Add(time.Hour * 24 * 30).Unix(),
+		"exp":time.Now().Add(time.Hour * 24 * 30).Unix(),
 	})
 
 	tokenString, err := token.SignedString([]byte(os.Getenv("MY_SECRET")))

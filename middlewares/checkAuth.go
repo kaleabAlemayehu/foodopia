@@ -16,6 +16,7 @@ func CheckAuth(c *gin.Context) {
 	tokenString, err := c.Cookie("Authorization")
 
 	if err != nil {
+		log.Print("error when try to get token")
 		c.AbortWithStatus(http.StatusUnauthorized)
 	}
 
@@ -61,22 +62,25 @@ func CheckAuth(c *gin.Context) {
 
 		// check the experation
 		if float64(time.Now().Unix()) > claims["exp"].(float64) {
+			log.Println("the token is expired")
 			c.AbortWithStatus(http.StatusUnauthorized)
 		}
 
 		// find the user with token sub
 		userID, ok := claims["user_id"].(string)
+		log.Println("claim %v", claims)
 		if !ok {
 			// Handle case where user ID is a float64
 			userIDFloat, ok := claims["user_id"].(float64)
 			if !ok {
+				log.Println("the claim fail")
 				c.AbortWithStatus(http.StatusUnauthorized)
 				return
 			}
 			userID = fmt.Sprintf("%.0f", userIDFloat)
 		}
 
-		c.Set("userID", userID)
+		c.Set("ID", userID)
 
 		// Continue
 		c.Next()

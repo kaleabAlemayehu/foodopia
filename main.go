@@ -22,6 +22,7 @@ func main() {
 	r.POST("/signup", handlers.Signup)
 	r.POST("/login", handlers.Login)
 	r.POST("/graphql", middlewares.CheckAuth, handlers.ProxyToHasura)
+	r.POST("/upload", handlers.Upload);
 	r.Run(":" + port)
 
 }

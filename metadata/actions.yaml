@@ -1,6 +1,8 @@
 actions: []
 custom_types:
   enums: []
-  input_objects: []
-  objects: []
+  input_objects:
+    - name: CreateRecipeImagesInput
+  objects:
+    - name: CreateRecipeImagesOutput
   scalars: []

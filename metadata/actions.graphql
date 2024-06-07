@@ -1,0 +1,10 @@
+input CreateRecipeImagesInput {
+  recipe_id: Int!
+  image_urls: [String!]!
+}
+
+type CreateRecipeImagesOutput {
+  recipe_id: Int!
+  image_urls: [String!]!
+}
+
