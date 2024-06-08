@@ -23,6 +23,7 @@ func main() {
 	r.POST("/login", handlers.Login)
 	r.POST("/graphql", middlewares.CheckAuth, handlers.ProxyToHasura)
 	r.POST("/upload", handlers.Upload);
+	r.POST("/welcome", handlers.SendEmail);
 	r.Run(":" + port)
 
 }

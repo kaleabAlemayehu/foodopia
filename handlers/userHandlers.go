@@ -3,14 +3,17 @@ package handlers
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
+	"net/smtp"
 	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/kaleabAlemayehu/foodopia/utility"
+	"github.com/tidwall/gjson"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -21,6 +24,7 @@ type Body struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
+
 
 func Signup(c *gin.Context) {
 	query := utility.CreateUserQueryStr
@@ -252,4 +256,46 @@ func ProxyToHasura(c *gin.Context) {
 
 	// Write the response body
 	c.Writer.Write(respBody)
+}
+
+func SendEmail(c *gin.Context){
+	var jsonData map[string]interface{}
+	if err := c.ShouldBindJSON(&jsonData); err != nil{
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+			"errorCode": 1,
+		})
+	}
+	jsonString, err:= json.Marshal(jsonData)
+	if err != nil{
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+			"errorCode": 2,
+		})
+	}
+	email := gjson.GetBytes(jsonString, "event.data.new.email").String()
+	username := gjson.GetBytes(jsonString, "event.data.new.username").String()
+
+	smtpHost := "smtp.gmail.com"
+    smtpPort := "587"
+    sender := os.Getenv("GMAIL_USERNAME")
+    password := os.Getenv("GMAIL_PASSWORD")  // Ideally, use environment variables for security
+
+    // Message.
+    subject := "Welcome Foodopia\n"
+    body := "Dear %v .\nWe Are very Delighted To Have You On Our Platform.\n We hope you will enjoy the great foodie community we have"
+
+    message := []byte(subject + "\n" + fmt.Sprintf(body, username))
+
+    // Authentication.
+    auth := smtp.PlainAuth("", sender, password, smtpHost)
+/*
+*/
+    // Sending email.
+    err = smtp.SendMail(smtpHost+":"+smtpPort, auth, sender, []string{email}, message)
+    if err != nil {
+        fmt.Println("Error sending email:", err)
+        return
+    }
+    fmt.Println("Email sent successfully!")
 }
