@@ -1,8 +1,16 @@
-actions: []
+actions:
+  - name: imageUpload
+    definition:
+      kind: asynchronous
+      handler: http://172.17.0.1:9000/upload
+    permissions:
+      - role: user
 custom_types:
   enums: []
   input_objects:
     - name: CreateRecipeImagesInput
   objects:
     - name: CreateRecipeImagesOutput
+    - name: fileOutput
+    - name: imageOutput
   scalars: []

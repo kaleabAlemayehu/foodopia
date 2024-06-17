@@ -1,3 +1,10 @@
+type Mutation {
+  imageUpload(
+    name: String!
+    base64Str: String!
+  ): imageOutput
+}
+
 input CreateRecipeImagesInput {
   recipe_id: Int!
   image_urls: [String!]!
@@ -6,5 +13,13 @@ input CreateRecipeImagesInput {
 type CreateRecipeImagesOutput {
   recipe_id: Int!
   image_urls: [String!]!
+}
+
+type fileOutput {
+  image_url: String!
+}
+
+type imageOutput {
+  image_url: String!
 }
 
