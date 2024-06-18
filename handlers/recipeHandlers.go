@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 )
@@ -40,10 +41,16 @@ func saveImageToFile(input imageUploadArgs) (saveImageOutput , error) {
 		panic(err);
 	}
 
-	// create file and wait to close it after the function is about to return
-	file, err := os.Create(fmt.Sprintf("%v",  fmt.Sprint(input.Name)))
+	dir, err := filepath.Abs("./uploads")
 	if err != nil {
-		panic("unable to create a file in the upload directory!")
+		panic(fmt.Sprintf("unable to get the saving directory %v", err))
+	}
+	// os.Create(filepath.Join(dir, filepath.Base(file.Filename)))
+	// create file and wait to close it after the function is about to return
+	file, err := os.Create(filepath.Join(dir, input.Name))
+	if err != nil {
+		// panic("unable to create a file in the upload directory!")
+		panic(err)
 	}
 	defer file.Close()
 	// write the byte to the file
