@@ -29,6 +29,7 @@ type saveImageOutput struct{
 
 
 func saveImageToFile(input imageUploadArgs) (saveImageOutput , error) {
+	var image saveImageOutput 
 	// fmt.Printf("name: %v", string(input.Name))
 	// fmt.Printf("data: %v", string(input.Base64Str))
 	// saveDir, err := filepath.Abs("../uploads")
@@ -38,31 +39,34 @@ func saveImageToFile(input imageUploadArgs) (saveImageOutput , error) {
 	// create a decoder with the base64 string from request
 	dec, err := base64.StdEncoding.DecodeString(string(input.Base64Str))
 	if err != nil {
-		panic(err);
+		return image, err
 	}
 
 	dir, err := filepath.Abs("./uploads")
 	if err != nil {
-		panic(fmt.Sprintf("unable to get the saving directory %v", err))
+		return image, err
 	}
 	// os.Create(filepath.Join(dir, filepath.Base(file.Filename)))
 	// create file and wait to close it after the function is about to return
 	file, err := os.Create(filepath.Join(dir, input.Name))
 	if err != nil {
 		// panic("unable to create a file in the upload directory!")
-		panic(err)
+		return image, err
 	}
 	defer file.Close()
 	// write the byte to the file
 	if _ , err = file.Write(dec); err != nil{
-		panic("unable to write file")
+		return image, err
 	}
 	//  save the file 
 	if err := file.Sync(); err != nil {
-        panic(err)
+		return image, err
     }
 	
-	var image saveImageOutput
+	image.ImageUrl , err = filepath.Abs(filepath.Join(dir, input.Name))
+	if err != nil {
+		return image, err
+	}
 	return image , err
 }
 
@@ -104,15 +108,15 @@ func Upload (c *gin.Context){
 			"errorCode": 3,
 		})
 	}
+	data , _ := json.Marshal(output)
+	fmt.Println(string(data))
 
-	c.JSON(http.StatusCreated,output)
+	w := c.Writer
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(data)
 
-	// func imageUpload(args imageUploadArgs) (response imageOutput, err error) {
-		// response =  imageOutput {
-		//   Image_url: "<sample value>",
-		// }
-		// return response, nil
 }
+
 // func Uploads(c *gin.Context){
 // 	recipeID := c.PostForm("recipe_id")
 //     form, err := c.MultipartForm()
