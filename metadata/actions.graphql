@@ -2,7 +2,7 @@ type Mutation {
   imageUpload(
     name: String!
     base64Str: String!
-  ): imageOutput
+  ): imageOutput!
 }
 
 input CreateRecipeImagesInput {
