@@ -3,6 +3,7 @@ package handlers
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -20,79 +21,221 @@ import (
 )
 
 type Body struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Username string `json:"name"  binding:"required"`
+	Email    string `json:"email"  binding:"required"`
+	Password string `json:"password"  binding:"required"`
+}
+type Params struct {
+	Body Body `json:"params"`
+}
+type UserActionPayload struct {
+	SessionVariables map[string]interface{} `json:"session_variables"`
+	Input            Params                 `json:"input"`
 }
 
+type UserGraphQLError struct {
+	Message string `json:"message"`
+}
 
-func Signup(c *gin.Context) {
+type User struct {
+	ID       int    `json:"id"`
+	Email    string `json:"email"`
+	Username string `json:"username"`
+}
+
+type CreateUserOutput struct {
+	Name  string `json:"name"`
+	Email string `json:"email"`
+	Token string `json:"token"`
+}
+
+type SignupResponse struct {
+	Data struct {
+		InsertUsersOne User `json:"insert_users_one"`
+	} `json:"data"`
+}
+
+/**
+
+ */
+
+/*
+	type SignupRequest struct {
+	    Email    string `json:"email" binding:"required"`
+	    Password string `json:"password" binding:"required"`
+	    Name     string `json:"name" binding:"required"`
+	}
+
+	func Signup(c *gin.Context) {
+	    var req SignupRequest
+	    if err := c.ShouldBindJSON(&req); err != nil {
+	        c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid input"})
+	        return
+	    }
+
+	    hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	    if err != nil {
+	        c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal server error"})
+	        return
+	    }
+
+	    refreshToken := uuid.New().String()
+
+	    user := models.User{
+	        Name:         req.Name,
+	        Email:        req.Email,
+	        Password:     string(hashedPassword),
+	        RefreshToken: refreshToken,
+	    }
+
+	    if err := utils.InsertUser(user); err != nil {
+	        if utils.IsUniqueViolation(err) {
+	            c.JSON(http.StatusBadRequest, gin.H{"message": "Email already exists"})
+	        } else {
+	            c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal server error"})
+	        }
+	        return
+	    }
+
+	    token, err := utils.GenerateJWT(user.ID)
+	    if err != nil {
+	        c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal server error"})
+	        return
+	    }
+
+	    c.JSON(http.StatusOK, gin.H{
+	        "token":        token,
+	        "name":         user.Name,
+	        "email":        user.Email,
+	    })
+	}
+
+	{
+	        sub: id,
+	        "https://hasura.io/jwt/claims": {
+	            "x-hasura-allowed-roles": ["user"],
+	            "x-hasura-default-role": "user",
+	            "x-hasura-user-id": id,
+	        },
+	    };
+*/
+func RegisterNewUser(input Body) (*http.Response, error) {
+	//TODO:separate into this function
+	// get query for creating new user
 	query := utility.CreateUserQueryStr
 
 	// Load GQL url form environment
 	var GQLURL string = os.Getenv("GRAPHQL_URI")
 	if GQLURL == "" {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "GRAPHQL_URI not set",
-		})
-		return
-	}
-	var body Body
-	// the user body username/ password / email
-	if err := c.Bind(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "failed to read body",
-		})
-		return
+		// c.JSON(http.StatusInternalServerError, gin.H{
+		// 	"error": "GRAPHQL_URI not set",
+		// })
+		return nil, errors.New("GRAPHQL_URI not set")
 	}
 
 	// hash the password
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(body.Password), bcrypt.DefaultCost)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "unable to hash password",
-		})
-		return
+		// c.JSON(http.StatusInternalServerError, gin.H{
+		// 	"error": "UNABLE TO HASH THE PASSWORD",
+		// })
+		return nil, err
 	}
-	log.Printf("username: %s\n password: %s\n email: %s\n", body.Username, body.Password, body.Email)
+	log.Printf("username: %s\n password: %s\n email: %s\n", input.Username, input.Password, input.Email)
 	// create the user
 	payload := map[string]interface{}{
 		"query": query,
 		"variables": map[string]string{
-			"username":      body.Username,
+			"username":      input.Username,
 			"password_hash": string(hashedPassword),
-			"email":         body.Email,
+			"email":         input.Email,
 		},
 	}
 	payloadBytes, err := json.Marshal(payload)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "failed to marshal payload",
-		})
-		return
+		// c.JSON(http.StatusInternalServerError, gin.H{
+		// 	"error": "failed to marshal payload",
+		// })
+		return nil, err
 	}
 
 	// Perform the HTTP request
 	res, err := http.Post(GQLURL, "application/json", bytes.NewBuffer(payloadBytes))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "failed to create user",
-		})
+		// c.JSON(http.StatusInternalServerError, gin.H{
+		// 	"error": "failed to create user",
+		// })
+		// return
+		return nil, err
+	}
+
+	return res, nil
+
+}
+func Signup(c *gin.Context) {
+
+	// read the data from the request
+	var jsonData map[string]interface{}
+	// convert the byte( i think it is what it is) from gin.context to json
+	if err := c.ShouldBindJSON(&jsonData); err != nil {
+		panic(err)
+	}
+
+	//  marshal it to jsonString (map[string]Interface to json string but bytes)
+	jsonString, err := json.Marshal(jsonData)
+	if err != nil {
+		panic(err)
+	}
+	// parse it to userActionPayload
+	var actionPayload UserActionPayload
+	err = json.Unmarshal(jsonString, &actionPayload)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid payload"})
 		return
 	}
+
+	res, err := RegisterNewUser(actionPayload.Input.Body)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "failed to create user",
+			"message": err,
+		})
+	}
+
+	fmt.Printf("res.Body: %v\n", res.Body)
 	defer res.Body.Close()
+	// unmarshaling to json
+	var resByte map[string]interface{}
 
-	// Read the response
-	var result map[string]interface{}
-	if err := json.NewDecoder(res.Body).Decode(&result); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "failed to read response",
-		})
-		return
+	resJson, err := json.Marshal(resByte)
+	if err != nil {
+		fmt.Print(err.Error())
 	}
+	fmt.Printf("json %v", string(resJson))
 
-	// Respond with the result
-	c.JSON(http.StatusOK, result)
+	// Generate JWT token
+	// token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+	// 	"email": res
+	// 	"exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
+	// })
+	// tokenString, err := token.SignedString([]byte(os.Getenv("MY_SECRET")))
+	// if err != nil {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{
+	// 		"error": "failed to generate token",
+	// 	})
+	// 	return
+	// }
+	// // Read the response
+	// var result map[string]interface{}
+	// if err := json.NewDecoder(res.Body).Decode(&result); err != nil {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{
+	// 		"error": "failed to read response",
+	// 	})
+	// 	return
+	// }
+
+	// // Respond with the result
+	// c.JSON(http.StatusOK, result)
 }
 
 func Login(c *gin.Context) {
@@ -169,7 +312,7 @@ func Login(c *gin.Context) {
 	// Generate JWT token
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id": user["id"],
-		"exp":time.Now().Add(time.Hour * 24 * 30).Unix(),
+		"exp":     time.Now().Add(time.Hour * 24 * 30).Unix(),
 	})
 
 	tokenString, err := token.SignedString([]byte(os.Getenv("MY_SECRET")))
@@ -258,18 +401,18 @@ func ProxyToHasura(c *gin.Context) {
 	c.Writer.Write(respBody)
 }
 
-func SendEmail(c *gin.Context){
+func SendEmail(c *gin.Context) {
 	var jsonData map[string]interface{}
-	if err := c.ShouldBindJSON(&jsonData); err != nil{
+	if err := c.ShouldBindJSON(&jsonData); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
+			"error":     err.Error(),
 			"errorCode": 1,
 		})
 	}
-	jsonString, err:= json.Marshal(jsonData)
-	if err != nil{
+	jsonString, err := json.Marshal(jsonData)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
+			"error":     err.Error(),
 			"errorCode": 2,
 		})
 	}
@@ -277,25 +420,25 @@ func SendEmail(c *gin.Context){
 	username := gjson.GetBytes(jsonString, "event.data.new.username").String()
 
 	smtpHost := "smtp.gmail.com"
-    smtpPort := "587"
-    sender := os.Getenv("GMAIL_USERNAME")
-    password := os.Getenv("GMAIL_PASSWORD")  // Ideally, use environment variables for security
+	smtpPort := "587"
+	sender := os.Getenv("GMAIL_USERNAME")
+	password := os.Getenv("GMAIL_PASSWORD") // Ideally, use environment variables for security
 
-    // Message.
-    subject := "Welcome Foodopia\n"
-    body := "Dear %v .\nWe Are very Delighted To Have You On Our Platform.\n We hope you will enjoy the great foodie community we have"
+	// Message.
+	subject := "Welcome Foodopia\n"
+	body := "Dear %v .\nWe Are very Delighted To Have You On Our Platform.\n We hope you will enjoy the great foodie community we have"
 
-    message := []byte(subject + "\n" + fmt.Sprintf(body, username))
+	message := []byte(subject + "\n" + fmt.Sprintf(body, username))
 
-    // Authentication.
-    auth := smtp.PlainAuth("", sender, password, smtpHost)
-/*
-*/
-    // Sending email.
-    err = smtp.SendMail(smtpHost+":"+smtpPort, auth, sender, []string{email}, message)
-    if err != nil {
-        fmt.Println("Error sending email:", err)
-        return
-    }
-    fmt.Println("Email sent successfully!")
+	// Authentication.
+	auth := smtp.PlainAuth("", sender, password, smtpHost)
+	/*
+	 */
+	// Sending email.
+	err = smtp.SendMail(smtpHost+":"+smtpPort, auth, sender, []string{email}, message)
+	if err != nil {
+		fmt.Println("Error sending email:", err)
+		return
+	}
+	fmt.Println("Email sent successfully!")
 }

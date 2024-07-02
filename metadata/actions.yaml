@@ -5,12 +5,20 @@ actions:
       handler: http://172.17.0.1:9000/upload
     permissions:
       - role: user
+  - name: signup
+    definition:
+      kind: synchronous
+      handler: http://172.17.0.1:9000/signup
+    comment: an action that will be called when the user signup
 custom_types:
   enums: []
   input_objects:
     - name: CreateRecipeImagesInput
+    - name: SignupInput
   objects:
     - name: CreateRecipeImagesOutput
     - name: fileOutput
     - name: imageOutput
+    - name: JWT
+    - name: CreateUserOutput
   scalars: []

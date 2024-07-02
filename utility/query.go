@@ -2,7 +2,9 @@ package utility
 
 var CreateUserQueryStr string = `mutation MyMutation($username: String!, $password_hash: String!, $email: String!) {
 	insert_users_one(object: {username: $username, email: $email, password_hash: $password_hash}) {
-	  id
+		id
+		email
+		username
 	}
   }`
 
