@@ -3,7 +3,6 @@ package handlers
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -13,6 +12,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/hasura/go-graphql-client"
 	"github.com/kaleabAlemayehu/foodopia/utility"
 	"github.com/tidwall/gjson"
 
@@ -55,121 +55,32 @@ type SignupResponse struct {
 	} `json:"data"`
 }
 
-/**
+const xHasuraAdminSecret = "x-hasura-admin-secret"
 
- */
-
-/*
-	type SignupRequest struct {
-	    Email    string `json:"email" binding:"required"`
-	    Password string `json:"password" binding:"required"`
-	    Name     string `json:"name" binding:"required"`
-	}
-
-	func Signup(c *gin.Context) {
-	    var req SignupRequest
-	    if err := c.ShouldBindJSON(&req); err != nil {
-	        c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid input"})
-	        return
-	    }
-
-	    hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
-	    if err != nil {
-	        c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal server error"})
-	        return
-	    }
-
-	    refreshToken := uuid.New().String()
-
-	    user := models.User{
-	        Name:         req.Name,
-	        Email:        req.Email,
-	        Password:     string(hashedPassword),
-	        RefreshToken: refreshToken,
-	    }
-
-	    if err := utils.InsertUser(user); err != nil {
-	        if utils.IsUniqueViolation(err) {
-	            c.JSON(http.StatusBadRequest, gin.H{"message": "Email already exists"})
-	        } else {
-	            c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal server error"})
-	        }
-	        return
-	    }
-
-	    token, err := utils.GenerateJWT(user.ID)
-	    if err != nil {
-	        c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal server error"})
-	        return
-	    }
-
-	    c.JSON(http.StatusOK, gin.H{
-	        "token":        token,
-	        "name":         user.Name,
-	        "email":        user.Email,
-	    })
-	}
-
-	{
-	        sub: id,
-	        "https://hasura.io/jwt/claims": {
-	            "x-hasura-allowed-roles": ["user"],
-	            "x-hasura-default-role": "user",
-	            "x-hasura-user-id": id,
-	        },
-	    };
-*/
-func RegisterNewUser(input Body) (*http.Response, error) {
-	//TODO:separate into this function
-	// get query for creating new user
-	query := utility.CreateUserQueryStr
-
-	// Load GQL url form environment
-	var GQLURL string = os.Getenv("GRAPHQL_URI")
-	if GQLURL == "" {
-		// c.JSON(http.StatusInternalServerError, gin.H{
-		// 	"error": "GRAPHQL_URI not set",
-		// })
-		return nil, errors.New("GRAPHQL_URI not set")
-	}
-
-	// hash the password
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
-	if err != nil {
-		// c.JSON(http.StatusInternalServerError, gin.H{
-		// 	"error": "UNABLE TO HASH THE PASSWORD",
-		// })
-		return nil, err
-	}
-	log.Printf("username: %s\n password: %s\n email: %s\n", input.Username, input.Password, input.Email)
-	// create the user
-	payload := map[string]interface{}{
-		"query": query,
-		"variables": map[string]string{
-			"username":      input.Username,
-			"password_hash": string(hashedPassword),
-			"email":         input.Email,
+func RegisterNewUser(input Body) (userId string, err error) {
+	// create a client
+	adminSecret := os.Getenv("ADMIN_SECRET")
+	client := graphql.NewClient(serverEndpoint, &http.Client{
+		Transport: headerRoundTripper{
+			setHeaders: func(req *http.Request) {
+				req.Header.Set(xHasuraAdminSecret, adminSecret)
+			},
+			rt: http.DefaultTransport,
 		},
-	}
-	payloadBytes, err := json.Marshal(payload)
-	if err != nil {
-		// c.JSON(http.StatusInternalServerError, gin.H{
-		// 	"error": "failed to marshal payload",
-		// })
-		return nil, err
+	})
+	// get the mutation component and create it
+	var m struct {
+		InsertUsersOne struct {
+		} `graphql:"insert_users_one(object: {email: $email, password_hash: $password_hash, username: $username})"`
 	}
 
-	// Perform the HTTP request
-	res, err := http.Post(GQLURL, "application/json", bytes.NewBuffer(payloadBytes))
-	if err != nil {
-		// c.JSON(http.StatusInternalServerError, gin.H{
-		// 	"error": "failed to create user",
-		// })
-		// return
-		return nil, err
-	}
+	// create variables for the mutation
 
-	return res, nil
+	// create a user
+
+	// get the returns and get id
+
+	// retrun the id
 
 }
 func Signup(c *gin.Context) {

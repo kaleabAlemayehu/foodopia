@@ -31,20 +31,19 @@ array_relationships:
           name: recipes
           schema: public
 computed_fields:
-  - name: recipes_by_user
+  - name: recipeOfUser
     definition:
       function:
         name: get_recipes_for_user
         schema: public
-    comment: Get recipes created by the user
 event_triggers:
-  - name: user_welcome_message
+  - name: welcome_email
     definition:
       enable_manual: false
       insert:
         columns: '*'
     retry_conf:
       interval_sec: 10
-      num_retries: 1
+      num_retries: 0
       timeout_sec: 60
     webhook: http://172.17.0.1:9000/welcome
