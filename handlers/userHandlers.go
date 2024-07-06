@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -36,31 +37,23 @@ type UserActionPayload struct {
 type UserGraphQLError struct {
 	Message string `json:"message"`
 }
-
-type User struct {
-	ID       int    `json:"id"`
-	Email    string `json:"email"`
-	Username string `json:"username"`
+type headerRoundTripper struct {
+	setHeaders func(req *http.Request)
+	rt         http.RoundTripper
 }
 
-type CreateUserOutput struct {
-	Name  string `json:"name"`
-	Email string `json:"email"`
-	Token string `json:"token"`
-}
-
-type SignupResponse struct {
-	Data struct {
-		InsertUsersOne User `json:"insert_users_one"`
-	} `json:"data"`
+func (h headerRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
+	h.setHeaders(req)
+	return h.rt.RoundTrip(req)
 }
 
 const xHasuraAdminSecret = "x-hasura-admin-secret"
 
-func RegisterNewUser(input Body) (userId string, err error) {
+func RegisterNewUser(input Body) (userId int64, err error) {
 	// create a client
 	adminSecret := os.Getenv("ADMIN_SECRET")
-	client := graphql.NewClient(serverEndpoint, &http.Client{
+	gqlUrl := os.Getenv("GRAPHQL_URL")
+	client := graphql.NewClient(gqlUrl, &http.Client{
 		Transport: headerRoundTripper{
 			setHeaders: func(req *http.Request) {
 				req.Header.Set(xHasuraAdminSecret, adminSecret)
@@ -71,16 +64,32 @@ func RegisterNewUser(input Body) (userId string, err error) {
 	// get the mutation component and create it
 	var m struct {
 		InsertUsersOne struct {
+			ID       int    `graphql:"id"`
+			Username string `graphql:"username"`
+			Email    string `graphql:"email"`
 		} `graphql:"insert_users_one(object: {email: $email, password_hash: $password_hash, username: $username})"`
 	}
 
 	// create variables for the mutation
-
+	// hash the password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return 0, err
+	}
+	variables := map[string]interface{}{
+		"email":         input.Email,
+		"password_hash": string(hashedPassword),
+		"username":      input.Username,
+	}
 	// create a user
-
+	err = client.Mutate(context.Background(), &m, variables, graphql.OperationName("InsertUser"))
+	if err != nil {
+		fmt.Printf("what the heck %v\n", err)
+	}
 	// get the returns and get id
 
 	// retrun the id
+	return int64(m.InsertUsersOne.ID), nil
 
 }
 func Signup(c *gin.Context) {
@@ -112,9 +121,7 @@ func Signup(c *gin.Context) {
 			"message": err,
 		})
 	}
-
-	fmt.Printf("res.Body: %v\n", res.Body)
-	defer res.Body.Close()
+	fmt.Print(res)
 	// unmarshaling to json
 	var resByte map[string]interface{}
 
