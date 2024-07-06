@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/smtp"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -70,12 +71,12 @@ func RegisterNewUser(input Body) (userId int64, err error) {
 		} `graphql:"insert_users_one(object: {email: $email, password_hash: $password_hash, username: $username})"`
 	}
 
-	// create variables for the mutation
 	// hash the password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return 0, err
 	}
+	// create variables for the mutation
 	variables := map[string]interface{}{
 		"email":         input.Email,
 		"password_hash": string(hashedPassword),
@@ -86,9 +87,8 @@ func RegisterNewUser(input Body) (userId int64, err error) {
 	if err != nil {
 		fmt.Printf("what the heck %v\n", err)
 	}
-	// get the returns and get id
 
-	// retrun the id
+	// get id and return it
 	return int64(m.InsertUsersOne.ID), nil
 
 }
@@ -114,46 +114,57 @@ func Signup(c *gin.Context) {
 		return
 	}
 
-	res, err := RegisterNewUser(actionPayload.Input.Body)
+	userId, err := RegisterNewUser(actionPayload.Input.Body)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error":   "failed to create user",
 			"message": err,
 		})
 	}
-	fmt.Print(res)
-	// unmarshaling to json
-	var resByte map[string]interface{}
 
-	resJson, err := json.Marshal(resByte)
-	if err != nil {
-		fmt.Print(err.Error())
-	}
-	fmt.Printf("json %v", string(resJson))
+	/*
+		jwt.MapClaims{
+			"id":          user.ID,
+			"firstName":   user.FirstName,
+			"lastName":    user.LastName,
+			"email":       user.Email,
+			"phoneNumber": user.PhoneNumber,
+			"exp":         expiryDate,
+			"https://hasura.io/jwt/claims": map[string]interface{}{
+				"x-hasura-default-role":  "user",
+				"x-hasura-allowed-roles": [2]string{"user", "admin"},
+				"x-hasura-user-id":       strconv.Itoa(user.ID),
+			},
+
+	*/
 
 	// Generate JWT token
-	// token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-	// 	"email": res
-	// 	"exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
-	// })
-	// tokenString, err := token.SignedString([]byte(os.Getenv("MY_SECRET")))
-	// if err != nil {
-	// 	c.JSON(http.StatusInternalServerError, gin.H{
-	// 		"error": "failed to generate token",
-	// 	})
-	// 	return
-	// }
-	// // Read the response
-	// var result map[string]interface{}
-	// if err := json.NewDecoder(res.Body).Decode(&result); err != nil {
-	// 	c.JSON(http.StatusInternalServerError, gin.H{
-	// 		"error": "failed to read response",
-	// 	})
-	// 	return
-	// }
 
-	// // Respond with the result
-	// c.JSON(http.StatusOK, result)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"id":       userId,
+		"email":    actionPayload.Input.Body.Email,
+		"username": actionPayload.Input.Body.Username,
+		"exp":      time.Now().Add(time.Hour * 24 * 30).Unix(),
+		"https://hasura.io/jwt/claims": map[string]interface{}{
+			"x-hasura-default-role":  "user",
+			"x-hasura-allowed-roles": [2]string{"user", "admin"},
+			"x-hasura-user-id":       strconv.Itoa(int(userId)),
+		},
+	})
+	tokenString, err := token.SignedString([]byte(os.Getenv("MY_SECRET")))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "failed to generate token",
+		})
+		return
+	}
+
+	// Respond with the result
+	c.JSON(http.StatusOK, gin.H{
+		"name":  actionPayload.Input.Body.Username,
+		"email": actionPayload.Input.Body.Email,
+		"token": tokenString,
+	})
 }
 
 func Login(c *gin.Context) {
