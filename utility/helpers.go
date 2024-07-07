@@ -1,18 +1,10 @@
 package utility
 
-var CreateUserQueryStr string = `mutation MyMutation($username: String!, $password_hash: String!, $email: String!) {
-	insert_users_one(object: {username: $username, email: $email, password_hash: $password_hash}) {
-		id
-		email
-		username
-	}
-  }`
+import (
+	"github.com/kaleabAlemayehu/foodopia/models"
+)
 
-var CheckUser string = `query GetUserByEmail($email: String!) {
-	users(where: {email: {_eq: $email}}) {
-	  username
-	  password_hash
-	  email
-	  id
-	}
-  }`
+func CreateToken(user models.Payload) (token string) {
+
+	return ""
+}

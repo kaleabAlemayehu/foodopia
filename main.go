@@ -8,7 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/kaleabAlemayehu/foodopia/handlers"
-	"github.com/kaleabAlemayehu/foodopia/middlewares"
 )
 
 func main() {
@@ -33,7 +32,6 @@ func main() {
 		}))
 	r.POST("/signup", handlers.Signup)
 	r.POST("/login", handlers.Login)
-	r.POST("/graphql", middlewares.CheckAuth, handlers.ProxyToHasura)
 	r.POST("/upload", handlers.Upload)
 	r.POST("/welcome", handlers.SendEmail)
 	r.Run(":" + port)

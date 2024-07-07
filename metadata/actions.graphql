@@ -23,7 +23,7 @@ input CreateRecipeImagesInput {
 }
 
 input SignupInput {
-  name: String!
+  username: String!
   email: String!
   password: String!
 }
@@ -61,7 +61,7 @@ type CreateUserOutput {
 
 type LoginOutput {
   id: Int!
-  name: String!
+  username: String!
   email: String!
   token: String!
 }
