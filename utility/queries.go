@@ -2,12 +2,10 @@ package utility
 
 import (
 	"context"
-	"encoding/base64"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
 
 	"github.com/hasura/go-graphql-client"
 	"github.com/kaleabAlemayehu/foodopia/models"
@@ -120,40 +118,4 @@ func RegisterNewUser(input models.Payload) (models.Payload, error) {
 		Email:    m.InsertUsersOne.Email,
 	}, nil
 
-}
-
-func SaveImageToFile(input models.ImageUploadArgs) (models.SaveImageOutput, error) {
-	var image models.SaveImageOutput
-
-	// create a decoder with the base64 string from request
-	dec, err := base64.StdEncoding.DecodeString(string(input.Base64Str))
-	if err != nil {
-		panic(err)
-	}
-
-	dir, err := filepath.Abs("./uploads")
-	if err != nil {
-		panic(err)
-	}
-	// create file and wait to close it after the function is about to return
-	file, err := os.Create(filepath.Join(dir, input.Name))
-	if err != nil {
-		// panic("unable to create a file in the upload directory!")
-		panic(err)
-	}
-	defer file.Close()
-	// write the byte to the file
-	if _, err = file.Write(dec); err != nil {
-		panic(err)
-	}
-	//  save the file
-	if err := file.Sync(); err != nil {
-		panic(err)
-	}
-
-	image.ImageUrl, err = filepath.Abs(filepath.Join(dir, input.Name))
-	if err != nil {
-		panic(err)
-	}
-	return image, err
 }
