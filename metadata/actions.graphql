@@ -6,6 +6,12 @@ type Mutation {
 }
 
 type Mutation {
+  login(
+    params: LoginInput!
+  ): LoginOutput
+}
+
+type Mutation {
   signup(
     params: SignupInput!
   ): CreateUserOutput
@@ -18,6 +24,11 @@ input CreateRecipeImagesInput {
 
 input SignupInput {
   name: String!
+  email: String!
+  password: String!
+}
+
+input LoginInput {
   email: String!
   password: String!
 }
@@ -43,6 +54,13 @@ type JWT {
 }
 
 type CreateUserOutput {
+  name: String!
+  email: String!
+  token: String!
+}
+
+type LoginOutput {
+  id: Int!
   name: String!
   email: String!
   token: String!

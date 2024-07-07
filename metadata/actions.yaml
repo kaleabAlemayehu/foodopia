@@ -5,6 +5,11 @@ actions:
       handler: http://172.17.0.1:9000/upload
     permissions:
       - role: user
+  - name: login
+    definition:
+      kind: synchronous
+      handler: http://172.17.0.1:9000/login
+    comment: an action that will be called when the user login
   - name: signup
     definition:
       kind: synchronous
@@ -15,10 +20,12 @@ custom_types:
   input_objects:
     - name: CreateRecipeImagesInput
     - name: SignupInput
+    - name: LoginInput
   objects:
     - name: CreateRecipeImagesOutput
     - name: fileOutput
     - name: imageOutput
     - name: JWT
     - name: CreateUserOutput
+    - name: LoginOutput
   scalars: []

@@ -1,0 +1,11 @@
+{
+  "action": { "name": "login" },
+  "input": {
+    "params": {
+      "email": "cipherlofi@gmail.com",
+      "password": "$2a$10$62exJlyutiilI4GHxJ4x/eUbWvftBQov81xSQudh1uXwPD4fXz/ty"
+    }
+  },
+  "request_query": "mutation MyMutation($email: String = \"\", $password: String = \"\") {\n  login(params: {email: $email, password: $password}) {\n    email\n    id\n    name\n    token\n  }\n}\n",
+  "session_variables": { "x-hasura-role": "admin" }
+}
