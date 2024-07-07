@@ -1,77 +1,19 @@
 package handlers
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"net/smtp"
 	"os"
 
-	"github.com/hasura/go-graphql-client"
 	"github.com/kaleabAlemayehu/foodopia/models"
 	"github.com/kaleabAlemayehu/foodopia/utility"
 	"github.com/tidwall/gjson"
 
 	"github.com/gin-gonic/gin"
-	"golang.org/x/crypto/bcrypt"
 )
 
-type headerRoundTripper struct {
-	setHeaders func(req *http.Request)
-	rt         http.RoundTripper
-}
-
-func (h headerRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
-	h.setHeaders(req)
-	return h.rt.RoundTrip(req)
-}
-
-const xHasuraAdminSecret = "x-hasura-admin-secret"
-
-func RegisterNewUser(input models.Payload) (userId int64, err error) {
-	// create a client
-	adminSecret := os.Getenv("ADMIN_SECRET")
-	gqlUrl := os.Getenv("GRAPHQL_URL")
-	client := graphql.NewClient(gqlUrl, &http.Client{
-		Transport: headerRoundTripper{
-			setHeaders: func(req *http.Request) {
-				req.Header.Set(xHasuraAdminSecret, adminSecret)
-			},
-			rt: http.DefaultTransport,
-		},
-	})
-	// get the mutation component and create it
-	var m struct {
-		InsertUsersOne struct {
-			ID       int    `graphql:"id"`
-			Username string `graphql:"username"`
-			Email    string `graphql:"email"`
-		} `graphql:"insert_users_one(object: {email: $email, password_hash: $password_hash, username: $username})"`
-	}
-
-	// hash the password
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
-	if err != nil {
-		return 0, err
-	}
-	// create variables for the mutation
-	variables := map[string]interface{}{
-		"email":         input.Email,
-		"password_hash": string(hashedPassword),
-		"username":      input.Username,
-	}
-	// create a user
-	err = client.Mutate(context.Background(), &m, variables, graphql.OperationName("InsertUser"))
-	if err != nil {
-		fmt.Printf("what the heck %v\n", err)
-	}
-
-	// get id and return it
-	return int64(m.InsertUsersOne.ID), nil
-
-}
 func Signup(c *gin.Context) {
 
 	// read the data from the request
@@ -94,7 +36,7 @@ func Signup(c *gin.Context) {
 		return
 	}
 
-	actionPayload.Input.Payload.Id, err = RegisterNewUser(actionPayload.Input.Payload)
+	actionPayload.Input.Payload, err = utility.RegisterNewUser(actionPayload.Input.Payload)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error":   "failed to create user",
@@ -113,54 +55,7 @@ func Signup(c *gin.Context) {
 		"token":    string(tokenString),
 	})
 }
-func CheckUser(input models.Payload) (models.Payload, error) {
-	// create client
-	adminSecret := os.Getenv("ADMIN_SECRET")
-	gqlUrl := os.Getenv("GRAPHQL_URL")
-	client := graphql.NewClient(gqlUrl, &http.Client{
-		Transport: headerRoundTripper{
-			setHeaders: func(req *http.Request) {
-				req.Header.Set(xHasuraAdminSecret, adminSecret)
-			},
-			rt: http.DefaultTransport,
-		},
-	})
-	// create query
-	var q struct {
-		Users []struct {
-			Username     string `graphql:"username"`
-			PasswordHash string `graphql:"password_hash"`
-			Email        string `graphql:"email"`
-			Id           int64  `graphql:"id"`
-		} `graphql:"users(where: {email: {_eq: $email}})"`
-	}
 
-	// create varaiable
-	variable := map[string]interface{}{
-		"email": string(input.Email),
-	}
-
-	// send request to hasura
-	err := client.Query(context.Background(), &q, variable, graphql.OperationName("CheckUser"))
-	if err != nil {
-		log.Fatalf("error Occured: %v\n", err)
-	}
-	// check if the password is correct
-	storedPassword := q.Users[0].PasswordHash
-	if storedPassword == "" {
-		panic("there is no password")
-	}
-	if err := bcrypt.CompareHashAndPassword([]byte(storedPassword), []byte(input.Password)); err != nil {
-		panic("password is not the same!")
-	}
-
-	return models.Payload{
-		Id:       q.Users[0].Id,
-		Email:    q.Users[0].Email,
-		Username: q.Users[0].Username,
-	}, nil
-
-}
 func Login(c *gin.Context) {
 	// read the data from the request
 	var jsonData map[string]interface{}
@@ -183,7 +78,7 @@ func Login(c *gin.Context) {
 		return
 	}
 	// check if the user is legit
-	res, err := CheckUser(actionPayload.Input.Payload)
+	res, err := utility.CheckUser(actionPayload.Input.Payload)
 	if err != nil {
 		panic("there is fucking error")
 	}
