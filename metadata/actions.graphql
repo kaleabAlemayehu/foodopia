@@ -54,7 +54,8 @@ type JWT {
 }
 
 type CreateUserOutput {
-  name: String!
+  id: Int!
+  username: String!
   email: String!
   token: String!
 }

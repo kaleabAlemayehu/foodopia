@@ -14,6 +14,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/hasura/go-graphql-client"
 	"github.com/kaleabAlemayehu/foodopia/models"
+	"github.com/kaleabAlemayehu/foodopia/utility"
 	"github.com/tidwall/gjson"
 
 	"github.com/gin-gonic/gin"
@@ -96,7 +97,7 @@ func Signup(c *gin.Context) {
 		return
 	}
 
-	userId, err := RegisterNewUser(actionPayload.Input.Payload)
+	actionPayload.Input.Payload.Id, err = RegisterNewUser(actionPayload.Input.Payload)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error":   "failed to create user",
@@ -104,32 +105,15 @@ func Signup(c *gin.Context) {
 		})
 	}
 
-	// add claim
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"id":       userId,
-		"email":    actionPayload.Input.Payload.Email,
-		"username": actionPayload.Input.Payload.Username,
-		"exp":      time.Now().Add(time.Hour * 24 * 30).Unix(),
-		"https://hasura.io/jwt/claims": map[string]interface{}{
-			"x-hasura-default-role":  "user",
-			"x-hasura-allowed-roles": [2]string{"user", "admin"},
-			"x-hasura-user-id":       strconv.Itoa(int(userId)),
-		},
-	})
 	// Generate JWT token
-	tokenString, err := token.SignedString([]byte(os.Getenv("MY_SECRET")))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "failed to generate token",
-		})
-		return
-	}
+	tokenString := utility.CreateToken(actionPayload.Input.Payload)
 
 	// Respond with the result
 	c.JSON(http.StatusOK, gin.H{
-		"name":  actionPayload.Input.Payload.Username,
-		"email": actionPayload.Input.Payload.Email,
-		"token": tokenString,
+		"id":       actionPayload.Input.Payload.Id,
+		"email":    actionPayload.Input.Payload.Email,
+		"username": actionPayload.Input.Payload.Username,
+		"token":    string(tokenString),
 	})
 }
 func CheckUser(input models.Payload) (models.Payload, error) {
