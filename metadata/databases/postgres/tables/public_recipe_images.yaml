@@ -5,3 +5,60 @@ object_relationships:
   - name: recipe
     using:
       foreign_key_constraint_on: recipe_id
+insert_permissions:
+  - role: user
+    permission:
+      check:
+        user_id:
+          _eq: X-Hasura-User-Id
+      set:
+        user_id: x-hasura-user-id
+      columns:
+        - is_featured
+        - id
+        - recipe_id
+        - user_id
+        - image_url
+    comment: ""
+select_permissions:
+  - role: anonymous
+    permission:
+      columns:
+        - is_featured
+        - id
+        - recipe_id
+        - user_id
+        - image_url
+      filter: {}
+    comment: ""
+  - role: user
+    permission:
+      columns:
+        - is_featured
+        - id
+        - recipe_id
+        - user_id
+        - image_url
+      filter: {}
+    comment: ""
+update_permissions:
+  - role: user
+    permission:
+      columns:
+        - is_featured
+        - id
+        - recipe_id
+        - user_id
+        - image_url
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id
+      check: null
+    comment: ""
+delete_permissions:
+  - role: user
+    permission:
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id
+    comment: ""

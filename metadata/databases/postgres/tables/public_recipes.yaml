@@ -51,3 +51,78 @@ array_relationships:
         table:
           name: steps
           schema: public
+insert_permissions:
+  - role: user
+    permission:
+      check:
+        user_id:
+          _eq: X-Hasura-User-Id
+      set:
+        user_id: x-hasura-user-id
+      columns:
+        - category_id
+        - created_at
+        - description
+        - featured_image_url
+        - prep_time
+        - title
+        - updated_at
+        - user_id
+    comment: ""
+select_permissions:
+  - role: anonymous
+    permission:
+      columns:
+        - title
+        - avg_rating
+        - category_id
+        - id
+        - prep_time
+        - total_comments
+        - total_likes
+        - user_id
+        - description
+        - featured_image_url
+        - created_at
+        - updated_at
+      filter: {}
+    comment: ""
+  - role: user
+    permission:
+      columns:
+        - title
+        - avg_rating
+        - category_id
+        - id
+        - prep_time
+        - total_comments
+        - total_likes
+        - user_id
+        - description
+        - featured_image_url
+        - created_at
+        - updated_at
+      filter: {}
+    comment: ""
+update_permissions:
+  - role: user
+    permission:
+      columns:
+        - category_id
+        - description
+        - featured_image_url
+        - prep_time
+        - title
+        - updated_at
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id
+      check: null
+    comment: ""
+delete_permissions:
+  - role: user
+    permission:
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id
+    comment: ""

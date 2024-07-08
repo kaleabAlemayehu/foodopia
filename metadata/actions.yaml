@@ -9,11 +9,17 @@ actions:
     definition:
       kind: synchronous
       handler: http://172.17.0.1:9000/login
+    permissions:
+      - role: user
+      - role: anonymous
     comment: an action that will be called when the user login
   - name: signup
     definition:
       kind: synchronous
       handler: http://172.17.0.1:9000/signup
+    permissions:
+      - role: anonymous
+      - role: user
     comment: an action that will be called when the user signup
 custom_types:
   enums: []

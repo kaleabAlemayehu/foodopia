@@ -9,3 +9,14 @@ array_relationships:
         table:
           name: recipes
           schema: public
+select_permissions:
+  - role: anonymous
+    permission:
+      columns: []
+      filter: {}
+    comment: ""
+  - role: user
+    permission:
+      columns: []
+      filter: {}
+    comment: ""

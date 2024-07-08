@@ -36,6 +36,23 @@ computed_fields:
       function:
         name: get_recipes_for_user
         schema: public
+select_permissions:
+  - role: anonymous
+    permission:
+      columns:
+        - created_at
+        - email
+        - username
+      filter: {}
+    comment: ""
+  - role: user
+    permission:
+      columns:
+        - created_at
+        - email
+        - username
+      filter: {}
+    comment: ""
 event_triggers:
   - name: welcome_email
     definition:
