@@ -101,8 +101,9 @@ func Login(c *gin.Context) {
 			"email":    "",
 			"username": "",
 			"token":    "",
-			"error":    err,
+			"error":    "BadRequest: unable to parse the payload!",
 		})
+		return
 	}
 
 	//marshal it to jsonString (map[string]Interface to json string but bytes)
@@ -113,8 +114,9 @@ func Login(c *gin.Context) {
 			"email":    "",
 			"username": "",
 			"token":    "",
-			"error":    err,
+			"error":    "BadRequest: unable to parse the payload!",
 		})
+		return
 	}
 
 	// unmashall it to models.UserActionPayload
@@ -126,19 +128,22 @@ func Login(c *gin.Context) {
 			"email":    "",
 			"username": "",
 			"token":    "",
-			"error":    err,
+			"error":    "BadRequest: unable to parse the payload!",
 		})
+		return
 	}
 	// check if the user is legit
 	res, err := utility.CheckUser(actionPayload.Input.Payload)
+	fmt.Printf("error: %v", err)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"id":       0,
 			"email":    "",
 			"username": "",
 			"token":    "",
-			"error":    err,
+			"error":    "Email or Password is not correct!",
 		})
+		return
 	}
 
 	// generate jwt token
@@ -149,8 +154,9 @@ func Login(c *gin.Context) {
 			"email":    "",
 			"username": "",
 			"token":    "",
-			"error":    err,
+			"error":    "internalError: unable to creat a token!",
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -158,6 +164,7 @@ func Login(c *gin.Context) {
 		"username": res.Username,
 		"email":    res.Email,
 		"token":    tokenString,
+		"error":    "",
 	})
 
 }

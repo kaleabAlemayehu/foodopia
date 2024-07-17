@@ -2,6 +2,7 @@ package utility
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"os"
 
@@ -54,20 +55,23 @@ func CheckUser(input models.Payload) (models.Payload, error) {
 	if err != nil {
 		return models.Payload{}, err
 	}
-	// check if the password is correct
-	storedPassword := q.Users[0].PasswordHash
-	if storedPassword == "" {
-		return models.Payload{}, err
-	}
-	if err := bcrypt.CompareHashAndPassword([]byte(storedPassword), []byte(input.Password)); err != nil {
-		return models.Payload{}, err
-	}
 
-	return models.Payload{
-		Id:       q.Users[0].Id,
-		Email:    q.Users[0].Email,
-		Username: q.Users[0].Username,
-	}, nil
+	// check if the password is correct
+	if len(q.Users) > 0 && q.Users[0].PasswordHash != "" {
+
+		storedPassword := q.Users[0].PasswordHash
+
+		if err := bcrypt.CompareHashAndPassword([]byte(storedPassword), []byte(input.Password)); err != nil {
+			return models.Payload{}, err
+		}
+		return models.Payload{
+			Id:       q.Users[0].Id,
+			Email:    q.Users[0].Email,
+			Username: q.Users[0].Username,
+		}, nil
+	} else {
+		return models.Payload{}, errors.New("NO user registered")
+	}
 
 }
 
