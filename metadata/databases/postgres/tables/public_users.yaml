@@ -36,6 +36,27 @@ computed_fields:
       function:
         name: get_recipes_for_user
         schema: public
+insert_permissions:
+  - role: anonymous
+    permission:
+      check: {}
+      columns:
+        - email
+        - username
+        - id
+        - password_hash
+        - created_at
+    comment: ""
+  - role: user
+    permission:
+      check: {}
+      columns:
+        - email
+        - username
+        - id
+        - password_hash
+        - created_at
+    comment: ""
 select_permissions:
   - role: anonymous
     permission:

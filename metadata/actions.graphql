@@ -58,6 +58,7 @@ type CreateUserOutput {
   username: String!
   email: String!
   token: String!
+  error: String
 }
 
 type LoginOutput {
@@ -65,5 +66,6 @@ type LoginOutput {
   username: String!
   email: String!
   token: String!
+  error: String
 }
 

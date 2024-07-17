@@ -20,32 +20,67 @@ func Signup(c *gin.Context) {
 	var jsonData map[string]interface{}
 	// convert the byte( i think it is what it is) from gin.context to json
 	if err := c.ShouldBindJSON(&jsonData); err != nil {
-		panic(err)
+		c.JSON(http.StatusOK, gin.H{
+			"id":       0,
+			"email":    "",
+			"username": "",
+			"token":    "",
+			"error":    "BadRequest: invalid user action payload",
+		})
+		return
 	}
 
 	//marshal it to jsonString (map[string]Interface to json string but bytes)
 	jsonString, err := json.Marshal(jsonData)
 	if err != nil {
-		panic(err)
+		c.JSON(http.StatusOK, gin.H{
+			"id":       0,
+			"email":    "",
+			"username": "",
+			"token":    "",
+			"error":    "BadRequest: invalid user action payload",
+		})
+		return
 	}
 	// parse it to userActionPayload
 	var actionPayload models.UserActionPayload
 	err = json.Unmarshal(jsonString, &actionPayload)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid payload"})
+		c.JSON(http.StatusOK, gin.H{
+			"id":       0,
+			"email":    "",
+			"username": "",
+			"token":    "",
+			"error":    "BadRequest: invalid user action payload",
+		})
 		return
 	}
 
 	actionPayload.Input.Payload, err = utility.RegisterNewUser(actionPayload.Input.Payload)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error":   "failed to create user",
-			"message": err,
+		c.JSON(http.StatusOK, gin.H{
+			"id":       0,
+			"email":    "",
+			"username": "",
+			"token":    "",
+			"error":    "The User is already registered",
 		})
+		return
 	}
 
 	// Generate JWT token
-	tokenString := utility.CreateToken(actionPayload.Input.Payload)
+	tokenString, err := utility.CreateToken(actionPayload.Input.Payload)
+
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"id":       0,
+			"email":    "",
+			"username": "",
+			"token":    "",
+			"error":    "Internal Server Error: unable to create token",
+		})
+		return
+	}
 
 	// Respond with the result
 	c.JSON(http.StatusOK, gin.H{
@@ -61,30 +96,62 @@ func Login(c *gin.Context) {
 	var jsonData map[string]interface{}
 	// convert the byte( i think it is what it is) from gin.context to json
 	if err := c.ShouldBindJSON(&jsonData); err != nil {
-		panic(err)
+		c.JSON(http.StatusOK, gin.H{
+			"id":       0,
+			"email":    "",
+			"username": "",
+			"token":    "",
+			"error":    err,
+		})
 	}
 
 	//marshal it to jsonString (map[string]Interface to json string but bytes)
 	jsonString, err := json.Marshal(jsonData)
 	if err != nil {
-		panic(err)
+		c.JSON(http.StatusOK, gin.H{
+			"id":       0,
+			"email":    "",
+			"username": "",
+			"token":    "",
+			"error":    err,
+		})
 	}
 
 	// unmashall it to models.UserActionPayload
 	var actionPayload models.UserActionPayload
 	err = json.Unmarshal(jsonString, &actionPayload)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid payload"})
-		return
+		c.JSON(http.StatusOK, gin.H{
+			"id":       0,
+			"email":    "",
+			"username": "",
+			"token":    "",
+			"error":    err,
+		})
 	}
 	// check if the user is legit
 	res, err := utility.CheckUser(actionPayload.Input.Payload)
 	if err != nil {
-		panic("there is fucking error")
+		c.JSON(http.StatusOK, gin.H{
+			"id":       0,
+			"email":    "",
+			"username": "",
+			"token":    "",
+			"error":    err,
+		})
 	}
 
 	// generate jwt token
-	tokenString := utility.CreateToken(res)
+	tokenString, err := utility.CreateToken(res)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"id":       0,
+			"email":    "",
+			"username": "",
+			"token":    "",
+			"error":    err,
+		})
+	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"id":       res.Id,

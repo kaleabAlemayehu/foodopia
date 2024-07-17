@@ -27,7 +27,8 @@ services:
       HASURA_GRAPHQL_CONSOLE_ASSETS_DIR: /srv/console-assets
       ## uncomment next line to set an admin secret
       HASURA_GRAPHQL_ADMIN_SECRET: "myadminsecretkey"
-      HASURA_GRAPHQL_JWT_SECRET: '{ "type": "HS256", "key": "jkdjaldjkfwofjaovoiejfoeiwjfivomaoiejfaiovmkalfmewoimvakvmsofiejfmvaoijweavmaoijzmovoejfao" }'
+      HASURA_GRAPHQL_UNAUTHORIZED_ROLE: anonymous
+      HASURA_GRAPHQL_JWT_SECRET: '{ "type": "HS256", "key": "08704e821fb7ed046284f34007a438167944c2b096b6d05705f15878104af1ac" }'
       HASURA_GRAPHQL_METADATA_DEFAULTS: '{"backend_configs":{"dataconnector":{"athena":{"uri":"http://data-connector-agent:8081/api/v1/athena"},"mariadb":{"uri":"http://data-connector-agent:8081/api/v1/mariadb"},"mysql8":{"uri":"http://data-connector-agent:8081/api/v1/mysql"},"oracle":{"uri":"http://data-connector-agent:8081/api/v1/oracle"},"snowflake":{"uri":"http://data-connector-agent:8081/api/v1/snowflake"}}}}'
     depends_on:
       data-connector-agent:

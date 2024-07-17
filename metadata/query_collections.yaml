@@ -1,1 +1,14 @@
-[]
+- name: allowed-queries
+  definition:
+    queries:
+      - name: Signup
+        query: |
+          mutation MyMutation ($email: String!, $password: String!, $username: String!) {
+            signup(params: {email:$email,password:$password,username:$username}) {
+              email
+              error
+              id
+              token
+              username
+            }
+          }

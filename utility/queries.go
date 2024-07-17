@@ -2,8 +2,6 @@ package utility
 
 import (
 	"context"
-	"fmt"
-	"log"
 	"net/http"
 	"os"
 
@@ -54,15 +52,15 @@ func CheckUser(input models.Payload) (models.Payload, error) {
 	// send request to hasura
 	err := client.Query(context.Background(), &q, variable, graphql.OperationName("CheckUser"))
 	if err != nil {
-		log.Fatalf("error Occured: %v\n", err)
+		return models.Payload{}, err
 	}
 	// check if the password is correct
 	storedPassword := q.Users[0].PasswordHash
 	if storedPassword == "" {
-		panic("there is no password")
+		return models.Payload{}, err
 	}
 	if err := bcrypt.CompareHashAndPassword([]byte(storedPassword), []byte(input.Password)); err != nil {
-		panic("password is not the same!")
+		return models.Payload{}, err
 	}
 
 	return models.Payload{
@@ -97,7 +95,7 @@ func RegisterNewUser(input models.Payload) (models.Payload, error) {
 	// hash the password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
 	if err != nil {
-		panic(err)
+		return models.Payload{}, err
 	}
 	// create variables for the mutation
 	variables := map[string]interface{}{
@@ -108,7 +106,7 @@ func RegisterNewUser(input models.Payload) (models.Payload, error) {
 	// create a user
 	err = client.Mutate(context.Background(), &m, variables, graphql.OperationName("InsertUser"))
 	if err != nil {
-		fmt.Printf("what the heck %v\n", err)
+		return models.Payload{}, err
 	}
 
 	// get id and return it

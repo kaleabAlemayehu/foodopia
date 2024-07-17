@@ -11,7 +11,7 @@ import (
 	"github.com/kaleabAlemayehu/foodopia/models"
 )
 
-func CreateToken(user models.Payload) string {
+func CreateToken(user models.Payload) (string, error) {
 	// add claim
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"id":       user.Id,
@@ -27,10 +27,11 @@ func CreateToken(user models.Payload) string {
 	// Generate JWT token
 	tokenString, err := token.SignedString([]byte(os.Getenv("MY_SECRET")))
 	if err != nil {
-		panic("unable to stringify token")
+		return "", err
+
 	}
 
-	return tokenString
+	return tokenString, nil
 }
 func SaveImageToFile(input models.ImageUploadArgs) (models.SaveImageOutput, error) {
 	var image models.SaveImageOutput
