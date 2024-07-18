@@ -12,3 +12,11 @@
               username
             }
           }
+      - name: UploadImage
+        query: |
+          mutation UploadImage ($base64Str: String!, $fileName: String!) {
+            imageUpload(base64Str: $base64Str, fileName: $fileName) {
+              error
+              imageUrl
+            }
+          }

@@ -11,6 +11,8 @@ insert_permissions:
       check:
         user_id:
           _eq: X-Hasura-User-Id
+      set:
+        user_id: x-hasura-user-id
       columns:
         - name
         - quantity
