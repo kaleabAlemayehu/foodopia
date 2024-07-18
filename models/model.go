@@ -17,7 +17,7 @@ type UserActionPayload struct {
 }
 
 type ImageUploadArgs struct {
-	Name      string `json:"name"`
+	FileName  string `json:"fileName"`
 	Base64Str string `json:"base64Str"`
 }
 type ActionPayload struct {
@@ -26,5 +26,6 @@ type ActionPayload struct {
 }
 
 type SaveImageOutput struct {
-	ImageUrl string `json:"image_url"`
+	ImageUrl string `json:"imageUrl"`
+	Error    string `json:"error"`
 }

@@ -1,6 +1,6 @@
 type Mutation {
   imageUpload(
-    name: String!
+    fileName: String!
     base64Str: String!
   ): imageOutput!
 }
@@ -43,7 +43,8 @@ type fileOutput {
 }
 
 type imageOutput {
-  image_url: String!
+  imageUrl: String!
+  error: String
 }
 
 type JWT {
