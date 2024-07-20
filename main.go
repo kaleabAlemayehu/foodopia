@@ -34,5 +34,6 @@ func main() {
 	r.POST("/login", handlers.Login)
 	r.POST("/upload", handlers.Upload)
 	r.POST("/welcome", handlers.SendEmail)
+	// r.GET("/images/", handlers.ImageServe)
 	r.Run(":" + port)
 }

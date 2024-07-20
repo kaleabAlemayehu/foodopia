@@ -67,10 +67,10 @@ func SaveImageToFile(input models.ImageUploadArgs) (models.SaveImageOutput, erro
 		return models.SaveImageOutput{}, errors.New("unable to save the file")
 	}
 
-	image.ImageUrl, err = filepath.Abs(filepath.Join(dir, input.FileName))
-	if err != nil {
+	image.ImageUrl = filepath.Join("http://localhost:9000/image/", input.FileName)
+	// if err != nil {
 
-		return models.SaveImageOutput{}, errors.New("unable to find the absolute path of a file")
-	}
+	// 	return models.SaveImageOutput{}, errors.New("unable to find the absolute path of a file")
+	// }
 	return image, err
 }
