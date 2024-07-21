@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/smtp"
-	"os"
 
 	"github.com/kaleabAlemayehu/foodopia/models"
 	"github.com/kaleabAlemayehu/foodopia/utility"
@@ -184,29 +182,33 @@ func SendEmail(c *gin.Context) {
 			"errorCode": 2,
 		})
 	}
+	// get username and email of reciver
 	email := gjson.GetBytes(jsonString, "event.data.new.email").String()
-	username := gjson.GetBytes(jsonString, "event.data.new.username").String()
+	// username := gjson.GetBytes(jsonString, "event.data.new.username").String()
 
-	smtpHost := "smtp.gmail.com"
-	smtpPort := "587"
-	sender := os.Getenv("GMAIL_USERNAME")
-	password := os.Getenv("GMAIL_PASSWORD") // Ideally, use environment variables for security
+	err = utility.GetInstance().Send(string(email), "public/template.html", "subject",
+		struct{ Link string }{Link: "https://www.nasa.gov/"})
+
+	// smtpHost := "smtp.gmail.com"
+	// smtpPort := "587"
+	// sender := os.Getenv("GMAIL_USERNAME")
+	// password := os.Getenv("GMAIL_PASSWORD") // Ideally, use environment variables for security
 
 	// Message.
-	subject := "Welcome Foodopia\n"
-	body := "Dear %v .\nWe Are very Delighted To Have You On Our Platform.\n We hope you will enjoy the great foodie community we have"
+	// subject := "Welcome Foodopia\n"
+	// body := "Dear %v .\nWe Are very Delighted To Have You On Our Platform.\n We hope you will enjoy the great foodie community we have"
 
-	message := []byte(subject + "\n" + fmt.Sprintf(body, username))
+	// message := []byte(subject + "\n" + fmt.Sprintf(body, username))
 
 	// Authentication.
-	auth := smtp.PlainAuth("", sender, password, smtpHost)
+	// auth := smtp.PlainAuth("", sender, password, smtpHost)
 	/*
 	 */
 	// Sending email.
-	err = smtp.SendMail(smtpHost+":"+smtpPort, auth, sender, []string{email}, message)
-	if err != nil {
-		fmt.Println("Error sending email:", err)
-		return
-	}
-	fmt.Println("Email sent successfully!")
+	// err = smtp.SendMail(smtpHost+":"+smtpPort, auth, sender, []string{email}, message)
+	// if err != nil {
+	// 	fmt.Println("Error sending email:", err)
+	// 	return
+	// }
+	// fmt.Println("Email sent successfully!")
 }
