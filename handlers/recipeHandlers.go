@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"path/filepath"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/kaleabAlemayehu/foodopia/models"
@@ -53,4 +55,21 @@ func Upload(c *gin.Context) {
 		"error":    "",
 	})
 
+}
+
+func ServeImage(c *gin.Context) {
+	// Extract and clean the file path from the request URL
+	path := strings.TrimPrefix(c.Request.URL.Path, "/images/")
+	fmt.Printf("Requested path: %v\n", path)
+
+	filePath := filepath.Join("./upload", path)
+	fmt.Printf("Serving file from path: %v\n", filePath)
+
+	if _, err := filepath.Abs(filePath); err != nil {
+		fmt.Printf("File not found: %v\n", filePath)
+		c.JSON(http.StatusNotFound, gin.H{"error": "File not found"})
+		return
+	}
+
+	c.File(filePath)
 }
