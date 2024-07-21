@@ -184,31 +184,13 @@ func SendEmail(c *gin.Context) {
 	}
 	// get username and email of reciver
 	email := gjson.GetBytes(jsonString, "event.data.new.email").String()
-	// username := gjson.GetBytes(jsonString, "event.data.new.username").String()
+	username := gjson.GetBytes(jsonString, "event.data.new.username").String()
 
 	err = utility.GetInstance().Send(string(email), "public/template.html", "subject",
-		struct{ Link string }{Link: "https://www.nasa.gov/"})
+		struct{ Username string }{Username: fmt.Sprint(username)})
 
-	// smtpHost := "smtp.gmail.com"
-	// smtpPort := "587"
-	// sender := os.Getenv("GMAIL_USERNAME")
-	// password := os.Getenv("GMAIL_PASSWORD") // Ideally, use environment variables for security
+	if err != nil {
+		panic("unable to send the welcome message")
+	}
 
-	// Message.
-	// subject := "Welcome Foodopia\n"
-	// body := "Dear %v .\nWe Are very Delighted To Have You On Our Platform.\n We hope you will enjoy the great foodie community we have"
-
-	// message := []byte(subject + "\n" + fmt.Sprintf(body, username))
-
-	// Authentication.
-	// auth := smtp.PlainAuth("", sender, password, smtpHost)
-	/*
-	 */
-	// Sending email.
-	// err = smtp.SendMail(smtpHost+":"+smtpPort, auth, sender, []string{email}, message)
-	// if err != nil {
-	// 	fmt.Println("Error sending email:", err)
-	// 	return
-	// }
-	// fmt.Println("Email sent successfully!")
 }

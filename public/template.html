@@ -3,9 +3,35 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Welcome To Foodopia</title>
   </head>
   <body>
-    hi
+    <img
+      src="https://i.imgur.com/qu5gALr.png"
+      alt="logo"
+      style="display: block; margin: 0 auto; width: 300px; padding: 10px 0px"
+    />
+    <h1 style="text-align: center">Hello {{.Username}}</h1>
+    <div style="max-width: fit-content; margin: auto">
+      <p>Dear {{.Username}}.</p>
+      <p>
+        We Are very Delighted To Have You On Our Platform.We hope you will enjoy
+        the great foodie community we have.
+      </p>
+      <a
+        align="center"
+        style="
+          padding: 8px;
+          background: red;
+          color: white;
+          text-decoration: none;
+          border-radius: 10px;
+          margin: auto;
+          display: inline-block;
+        "
+        href="http://localhost:3000/"
+        >Foodopia</a
+      >
+    </div>
   </body>
 </html>
