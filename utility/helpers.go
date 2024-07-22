@@ -3,6 +3,7 @@ package utility
 import (
 	"encoding/base64"
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -67,7 +68,7 @@ func SaveImageToFile(input models.ImageUploadArgs) (models.SaveImageOutput, erro
 		return models.SaveImageOutput{}, errors.New("unable to save the file")
 	}
 
-	image.ImageUrl = filepath.Join("http://localhost:9000/images/", input.FileName)
+	image.ImageUrl = fmt.Sprintf(`http://localhost:9000/images/%v`, input.FileName)
 	// if err != nil {
 
 	// 	return models.SaveImageOutput{}, errors.New("unable to find the absolute path of a file")

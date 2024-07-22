@@ -14,6 +14,8 @@ insert_permissions:
       check:
         user_id:
           _eq: X-Hasura-User-Id
+      set:
+        user_id: x-hasura-user-id
       columns:
         - id
         - rating
@@ -25,12 +27,24 @@ insert_permissions:
 select_permissions:
   - role: anonymous
     permission:
-      columns: []
+      columns:
+        - id
+        - rating
+        - recipe_id
+        - user_id
+        - comment
+        - created_at
       filter: {}
     comment: ""
   - role: user
     permission:
-      columns: []
+      columns:
+        - id
+        - rating
+        - recipe_id
+        - user_id
+        - comment
+        - created_at
       filter: {}
     comment: ""
 update_permissions:
