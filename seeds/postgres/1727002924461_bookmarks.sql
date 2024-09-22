@@ -1,0 +1,15 @@
+SET check_function_bodies = false;
+INSERT INTO public.bookmarks (id, user_id, recipe_id, created_at) VALUES (35, 82, 57, '2024-07-23 15:43:57.007275');
+INSERT INTO public.bookmarks (id, user_id, recipe_id, created_at) VALUES (36, 82, 54, '2024-07-23 15:44:10.515744');
+INSERT INTO public.bookmarks (id, user_id, recipe_id, created_at) VALUES (37, 82, 63, '2024-07-23 15:44:16.473719');
+INSERT INTO public.bookmarks (id, user_id, recipe_id, created_at) VALUES (38, 82, 82, '2024-07-23 15:44:25.416308');
+INSERT INTO public.bookmarks (id, user_id, recipe_id, created_at) VALUES (39, 82, 58, '2024-07-23 15:45:04.649464');
+INSERT INTO public.bookmarks (id, user_id, recipe_id, created_at) VALUES (40, 82, 65, '2024-07-23 15:45:12.61923');
+INSERT INTO public.bookmarks (id, user_id, recipe_id, created_at) VALUES (41, 82, 53, '2024-07-23 15:45:45.646096');
+INSERT INTO public.bookmarks (id, user_id, recipe_id, created_at) VALUES (42, 82, 56, '2024-07-23 15:45:53.250054');
+INSERT INTO public.bookmarks (id, user_id, recipe_id, created_at) VALUES (43, 82, 60, '2024-07-23 15:46:00.959921');
+INSERT INTO public.bookmarks (id, user_id, recipe_id, created_at) VALUES (44, 82, 81, '2024-07-23 15:47:10.185028');
+INSERT INTO public.bookmarks (id, user_id, recipe_id, created_at) VALUES (46, 81, 67, '2024-07-24 14:36:01.4704');
+INSERT INTO public.bookmarks (id, user_id, recipe_id, created_at) VALUES (53, 95, 54, '2024-07-25 08:54:57.556484');
+INSERT INTO public.bookmarks (id, user_id, recipe_id, created_at) VALUES (56, 99, 130, '2024-09-13 21:04:35.583096');
+SELECT pg_catalog.setval('public.bookmarks_id_seq', 56, true);

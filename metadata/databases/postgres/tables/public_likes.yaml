@@ -23,15 +23,6 @@ insert_permissions:
         - created_at
     comment: ""
 select_permissions:
-  - role: anonymous
-    permission:
-      columns:
-        - id
-        - recipe_id
-        - user_id
-        - created_at
-      filter: {}
-    comment: ""
   - role: user
     permission:
       columns:
@@ -39,7 +30,10 @@ select_permissions:
         - recipe_id
         - user_id
         - created_at
-      filter: {}
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id
+      allow_aggregations: true
     comment: ""
 update_permissions:
   - role: user

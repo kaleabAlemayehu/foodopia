@@ -63,6 +63,7 @@ select_permissions:
       columns:
         - created_at
         - email
+        - id
         - username
       filter: {}
     comment: ""
@@ -71,8 +72,10 @@ select_permissions:
       columns:
         - created_at
         - email
+        - id
         - username
       filter: {}
+      allow_aggregations: true
     comment: ""
 event_triggers:
   - name: welcome_email

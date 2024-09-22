@@ -1,0 +1,37 @@
+SET check_function_bodies = false;
+INSERT INTO public.comments (id, user_id, recipe_id, comment, rating, created_at) VALUES (55, 81, 82, 'test', 4, '2024-07-22 13:29:17.761179');
+INSERT INTO public.comments (id, user_id, recipe_id, comment, rating, created_at) VALUES (56, 81, 82, 'test', 4, '2024-07-22 13:29:38.983029');
+INSERT INTO public.comments (id, user_id, recipe_id, comment, rating, created_at) VALUES (57, 81, 82, 'test', 4, '2024-07-22 13:29:43.700927');
+INSERT INTO public.comments (id, user_id, recipe_id, comment, rating, created_at) VALUES (58, 81, 61, 'Lorem ipsum dolor sit amet consectetur adipisicing elit. A pariatur cupiditate nulla exercitationem ratione voluptatibus rerum ad? Dolor, consectetur. Officiis vero ea rerum sint. Magnam dolore magni excepturi dolorem harum.', 4, '2024-07-22 13:45:47.313271');
+INSERT INTO public.comments (id, user_id, recipe_id, comment, rating, created_at) VALUES (59, 81, 61, 'Lorem ipsum dolor sit amet consectetur adipisicing elit. A pariatur cupiditate nulla exercitationem ratione voluptatibus rerum ad? Dolor, consectetur. Officiis vero ea rerum sint. Magnam dolore magni excepturi dolorem harum.', 3, '2024-07-22 13:45:51.944631');
+INSERT INTO public.comments (id, user_id, recipe_id, comment, rating, created_at) VALUES (60, 81, 61, 'Lorem ipsum dolor sit amet consectetur adipisicing elit. A pariatur cupiditate nulla exercitationem ratione voluptatibus rerum ad? Dolor, consectetur. Officiis vero ea rerum sint. Magnam dolore magni excepturi dolorem harum.', 4, '2024-07-22 13:46:05.567799');
+INSERT INTO public.comments (id, user_id, recipe_id, comment, rating, created_at) VALUES (61, 81, 61, 'Lorem ipsum dolor sit amet consectetur adipisicing elit. A pariatur cupiditate nulla exercitationem ratione voluptatibus rerum ad? Dolor, consectetur. Officiis vero ea rerum sint. Magnam dolore magni excepturi dolorem harum.', 4, '2024-07-22 13:46:44.381846');
+INSERT INTO public.comments (id, user_id, recipe_id, comment, rating, created_at) VALUES (62, 82, 54, 'test', 4, '2024-07-22 15:54:10.085064');
+INSERT INTO public.comments (id, user_id, recipe_id, comment, rating, created_at) VALUES (63, 82, 54, 'test', 4, '2024-07-23 06:19:42.876766');
+INSERT INTO public.comments (id, user_id, recipe_id, comment, rating, created_at) VALUES (64, 82, 54, 'test', 4, '2024-07-23 06:19:44.616818');
+INSERT INTO public.comments (id, user_id, recipe_id, comment, rating, created_at) VALUES (65, 82, 54, 'test
+', 3, '2024-07-23 06:21:49.1189');
+INSERT INTO public.comments (id, user_id, recipe_id, comment, rating, created_at) VALUES (66, 82, 54, 'test', 4, '2024-07-23 06:22:39.171078');
+INSERT INTO public.comments (id, user_id, recipe_id, comment, rating, created_at) VALUES (67, 82, 54, 'test', 4, '2024-07-23 06:22:40.475297');
+INSERT INTO public.comments (id, user_id, recipe_id, comment, rating, created_at) VALUES (68, 82, 54, 'test', 4, '2024-07-23 06:22:42.344556');
+INSERT INTO public.comments (id, user_id, recipe_id, comment, rating, created_at) VALUES (69, 82, 54, 'test', 4, '2024-07-23 06:24:04.825033');
+INSERT INTO public.comments (id, user_id, recipe_id, comment, rating, created_at) VALUES (70, 82, 54, '5', 4, '2024-07-23 06:24:13.668496');
+INSERT INTO public.comments (id, user_id, recipe_id, comment, rating, created_at) VALUES (71, 82, 53, 'Pour 1/4 cup of batter onto the pan for each pancake. Cook until bubbles form on the surface, then flip and cook until golden brown on both sides', 4, '2024-07-23 06:34:27.829759');
+INSERT INTO public.comments (id, user_id, recipe_id, comment, rating, created_at) VALUES (72, 82, 53, 'Pour 1/4 cup of batter onto the pan for each pancake. Cook until bubbles form on the surface, then flip and cook until golden brown on both sides', 4, '2024-07-23 06:34:31.203308');
+INSERT INTO public.comments (id, user_id, recipe_id, comment, rating, created_at) VALUES (73, 81, 57, 'test', 4, '2024-07-24 14:04:05.224916');
+INSERT INTO public.comments (id, user_id, recipe_id, comment, rating, created_at) VALUES (74, 81, 57, 'test comment', 5, '2024-07-24 15:29:20.529184');
+INSERT INTO public.comments (id, user_id, recipe_id, comment, rating, created_at) VALUES (75, 81, 57, 'test', 4, '2024-07-24 15:30:32.918267');
+INSERT INTO public.comments (id, user_id, recipe_id, comment, rating, created_at) VALUES (76, 81, 57, 'test', 3, '2024-07-24 15:30:41.045552');
+INSERT INTO public.comments (id, user_id, recipe_id, comment, rating, created_at) VALUES (77, 81, 57, 'test comment here', 4, '2024-07-24 15:50:31.969775');
+INSERT INTO public.comments (id, user_id, recipe_id, comment, rating, created_at) VALUES (78, 98, 57, 'dkdkjfdkfjd', 5, '2024-07-25 11:41:14.949757');
+INSERT INTO public.comments (id, user_id, recipe_id, comment, rating, created_at) VALUES (79, 98, 67, 'test', 5, '2024-07-26 09:45:40.642839');
+INSERT INTO public.comments (id, user_id, recipe_id, comment, rating, created_at) VALUES (80, 99, 67, 'this is awesome!', 4, '2024-09-13 21:03:15.776007');
+INSERT INTO public.comments (id, user_id, recipe_id, comment, rating, created_at) VALUES (81, 99, 130, 'kjlkjlk', 3, '2024-09-13 21:04:48.520465');
+INSERT INTO public.comments (id, user_id, recipe_id, comment, rating, created_at) VALUES (82, 99, 54, 'jio uomuomuo u', 5, '2024-09-13 21:09:00.5852');
+INSERT INTO public.comments (id, user_id, recipe_id, comment, rating, created_at) VALUES (83, 99, 54, 'kjj uoumouou
+', 5, '2024-09-13 21:09:08.992791');
+INSERT INTO public.comments (id, user_id, recipe_id, comment, rating, created_at) VALUES (84, 99, 57, 'khlj', 5, '2024-09-13 21:10:52.588906');
+INSERT INTO public.comments (id, user_id, recipe_id, comment, rating, created_at) VALUES (85, 99, 57, 'kljljljl', 5, '2024-09-13 21:10:58.106388');
+INSERT INTO public.comments (id, user_id, recipe_id, comment, rating, created_at) VALUES (86, 99, 57, 'jljljljljoio ', 5, '2024-09-13 21:11:16.798206');
+INSERT INTO public.comments (id, user_id, recipe_id, comment, rating, created_at) VALUES (87, 99, 57, 'kljljkljlkjl', 5, '2024-09-13 21:11:22.909545');
+SELECT pg_catalog.setval('public.comments_id_seq', 88, true);
